@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:keepnote/core/utils/title_case_helper.dart';
+import 'package:keepnote/data/repositories/note_repository_impl.dart';
 import 'package:keepnote/domain/entities/note_entity.dart';
+import 'package:keepnote/domain/usecases/add_new_note_usecase.dart';
 import 'package:keepnote/shared/custom_widgets/custom_text_widget.dart';
 
 class AddPage extends StatefulWidget {
@@ -53,13 +55,60 @@ class _AddPageState extends State<AddPage> {
   }
 
   // add note
-  void addNote() {
-    print("Add note");
+  Future<bool> addNote() async {
+    final noteRepository = NoteRepositoryImpl();
+
+    var priorityEnum = NotePriorityEnum.normal;
+
+    switch (priority) {
+      case 'low':
+        priorityEnum = NotePriorityEnum.low;
+        break;
+      case 'high':
+        priorityEnum = NotePriorityEnum.high;
+        break;
+      default:
+        priorityEnum = NotePriorityEnum.normal;
+        break;
+    }
+
+    final note = NoteEntity(
+      title: titleController.text.toString(),
+      description: descriptionController.text.toString(),
+      completed: false,
+      dateTime: DateTime.now(),
+      priority: priorityEnum,
+    );
+
+    final addNoteUseCase = AddNewNoteUseCase(
+      noteRepository: noteRepository,
+      noteEntity: note,
+    );
+
+    final response = await addNoteUseCase.call();
+
+    return response;
   }
 
   // update note
   void updateNote() {
     print("Update note");
+  }
+
+  // show snack bar
+  void showSnackBar(BuildContext context, String message) {
+    final scaffoldContext = ScaffoldMessenger.of(context);
+    if (scaffoldContext.mounted) {
+      scaffoldContext.hideCurrentSnackBar();
+    }
+    scaffoldContext.showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        margin: EdgeInsets.only(bottom: 77.0, left: 16.0, right: 16.0),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
+        content: Text(message),
+      ),
+    );
   }
 
   @override
@@ -195,8 +244,34 @@ class _AddPageState extends State<AddPage> {
               child: SizedBox(
                 height: 45.0,
                 child: ElevatedButton(
-                  onPressed:
-                      () => widget.task == 'add' ? addNote() : updateNote(),
+                  onPressed: () async {
+                    // check values
+                    if (descriptionController.text.isEmpty) {
+                      showSnackBar(context, "Description must be provided.");
+                      return;
+                    }
+
+                    if (widget.task == 'add') {
+                      bool response = await addNote();
+
+                      if (!context.mounted) return;
+
+                      showSnackBar(
+                        context,
+                        response
+                            ? "Note added successfully"
+                            : "Not couldn't be added",
+                      );
+
+                      if (response) resetValues();
+
+                      response
+                          ? print("Note added successfully")
+                          : print("Note not added");
+                    } else {
+                      updateNote();
+                    }
+                  },
                   child: Text(TitleCaseHelper.getString(widget.task)),
                 ),
               ),

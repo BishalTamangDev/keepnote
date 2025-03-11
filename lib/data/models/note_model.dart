@@ -20,7 +20,7 @@ class NoteModel extends NoteEntity {
         (e) => e.name == json['priority'],
         orElse: () => NotePriorityEnum.normal, // Default if value is invalid
       ),
-      completed: json['completed'] as bool? ?? false,
+      completed: json['completed'] == 1 ? true : false,
       dateTime:
           json['dateTime'] != null
               ? DateTime.parse(json['dateTime'])

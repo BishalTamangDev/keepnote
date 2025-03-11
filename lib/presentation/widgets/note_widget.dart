@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:keepnote/core/utils/format_date_time_helper.dart';
 import 'package:keepnote/domain/entities/note_entity.dart';
 import 'package:keepnote/presentation/widgets/priority_badge_widget.dart';
 import 'package:keepnote/shared/custom_widgets/custom_text_widget.dart';
@@ -57,7 +58,7 @@ class _NoteWidgetState extends State<NoteWidget> {
               spacing: 8.0,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                widget.note.title != null
+                widget.note.title != null && widget.note.title!.isNotEmpty
                     ? Row(
                       children: [
                         Expanded(
@@ -81,7 +82,7 @@ class _NoteWidgetState extends State<NoteWidget> {
                       ],
                     ),
 
-                if (widget.note.title != null)
+                if (widget.note.title != null && widget.note.title!.isNotEmpty)
                   CustomTextWidget(
                     text: widget.note.description ?? "",
                     opacity: 0.7,
@@ -89,7 +90,11 @@ class _NoteWidgetState extends State<NoteWidget> {
                   ),
 
                 CustomTextWidget(
-                  text: widget.note.dateTime.toString(),
+                  text: FormatDateTimeHelper.getString(
+                    widget.note.dateTime,
+                  ),
+                  // text: widget.note.dateTime.toString(),
+                  // text: widget.note.dateTime.toString(),
                   opacity: 0.3,
                   type: 'label',
                 ),

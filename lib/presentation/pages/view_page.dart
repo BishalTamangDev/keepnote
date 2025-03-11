@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:keepnote/core/utils/format_date_time_helper.dart';
 import 'package:keepnote/domain/entities/note_entity.dart';
 import 'package:keepnote/presentation/widgets/priority_badge_widget.dart';
 
@@ -145,7 +146,9 @@ class _ViewPageState extends State<ViewPage> {
                           )
                           : PriorityBadge(priority: priority),
                       CustomTextWidget(
-                        text: widget.note.dateTime.toString(),
+                        text: FormatDateTimeHelper.getString(
+                          widget.note.dateTime,
+                        ),
                         type: 'label',
                         opacity: 0.4,
                       ),
