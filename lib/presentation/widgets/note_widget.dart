@@ -6,9 +6,11 @@ import 'package:keepnote/presentation/widgets/priority_badge_widget.dart';
 import 'package:keepnote/shared/custom_widgets/custom_text_widget.dart';
 
 class NoteWidget extends StatefulWidget {
-  const NoteWidget({super.key, required this.note});
+  const NoteWidget({super.key, required this.note, required this.callback});
 
   final NoteEntity note;
+
+  final VoidCallback callback;
 
   @override
   State<NoteWidget> createState() => _NoteWidgetState();
@@ -35,7 +37,9 @@ class _NoteWidgetState extends State<NoteWidget> {
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       borderRadius: BorderRadius.circular(8.0),
-      onTap: () => context.push("/note/view", extra: widget.note),
+      onTap: () => context
+              .push("/note/view", extra: widget.note)
+              .then((_) => widget.callback()),
       child: Opacity(
         opacity: widget.note.completed ? 0.3 : 1,
         child: Container(
@@ -90,11 +94,7 @@ class _NoteWidgetState extends State<NoteWidget> {
                   ),
 
                 CustomTextWidget(
-                  text: FormatDateTimeHelper.getString(
-                    widget.note.dateTime,
-                  ),
-                  // text: widget.note.dateTime.toString(),
-                  // text: widget.note.dateTime.toString(),
+                  text: FormatDateTimeHelper.getString(widget.note.dateTime),
                   opacity: 0.3,
                   type: 'label',
                 ),

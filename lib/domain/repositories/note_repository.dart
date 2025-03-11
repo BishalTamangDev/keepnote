@@ -10,4 +10,13 @@ abstract class NoteRepository {
 
   // add new note
   Future<bool> addNewNote(NoteEntity noteEntity);
+
+  // delete note
+  Future<bool> deleteNote(int id);
+
+  // mark note as completed
+  Future<bool> markNoteAsCompleted(int id);
+
+  // mark note as pending
+  Future<bool> markNoteAsPending(int id);
 }

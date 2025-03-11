@@ -131,4 +131,60 @@ class NoteLocalDataSource {
       return false;
     }
   }
+
+  // delete noe
+  Future<bool> deleteNote(int id) async {
+    try {
+      final response = await getDb();
+
+      return await response.fold((failure) => false, (db) async {
+        int rowAffected = await db.delete(
+          tblName,
+          where: "id = ?",
+          whereArgs: [id],
+        );
+        return rowAffected > 0;
+      });
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // mark note as completed
+  Future<bool> markNoteAsCompleted(int id) async {
+    try {
+      final response = await getDb();
+
+      return await response.fold((failure) => false, (db) async {
+        int rowAffected = await db.update(
+          tblName,
+          {'completed': 1},
+          where: "id = ?",
+          whereArgs: [id],
+        );
+        return rowAffected > 0;
+      });
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // mark note as pending
+  Future<bool> markNoteAsPending(int id) async {
+    try {
+      final response = await getDb();
+
+      return await response.fold((failure) => false, (db) async {
+        int rowAffected = await db.update(
+          tblName,
+          {'completed': 0},
+          where: "id = ?",
+          whereArgs: [id],
+        );
+        return rowAffected > 0;
+      });
+    } catch (e) {
+      return false;
+    }
+  }
 }

@@ -23,4 +23,19 @@ class NoteRepositoryImpl extends NoteRepository {
     );
     return response;
   }
+
+  @override
+  Future<bool> deleteNote(int id) async {
+    return await NoteLocalDataSource.getInstance().deleteNote(id);
+  }
+
+  @override
+  Future<bool> markNoteAsCompleted(int id) async {
+    return await NoteLocalDataSource.getInstance().markNoteAsCompleted(id);
+  }
+
+  @override
+  Future<bool> markNoteAsPending(int id) async {
+    return await NoteLocalDataSource.getInstance().markNoteAsPending(id);
+  }
 }

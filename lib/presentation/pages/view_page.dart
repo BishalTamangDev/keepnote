@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:keepnote/core/utils/format_date_time_helper.dart';
+import 'package:keepnote/data/repositories/note_repository_impl.dart';
 import 'package:keepnote/domain/entities/note_entity.dart';
+import 'package:keepnote/domain/usecases/delete_note_usecase.dart';
+import 'package:keepnote/domain/usecases/mark_note_as_completed_usecase.dart';
+import 'package:keepnote/domain/usecases/mark_note_as_pending_usecase.dart';
 import 'package:keepnote/presentation/widgets/priority_badge_widget.dart';
 
 import '../../shared/custom_widgets/custom_text_widget.dart';
@@ -16,8 +20,18 @@ class ViewPage extends StatefulWidget {
 }
 
 class _ViewPageState extends State<ViewPage> {
+  // delete function
+  Future<bool> deleteNote() async {
+    final noteRepository = NoteRepositoryImpl();
+    final deleteNoteUseCase = DeleteNoteUseCase(
+      noteRepository: noteRepository,
+      id: widget.note.id!,
+    );
+    return await deleteNoteUseCase.call();
+  }
+
   // functions
-  void deleteNote() {
+  void showNoteDeletionDialog() {
     showDialog(
       context: context,
       builder: (context) {
@@ -38,8 +52,23 @@ class _ViewPageState extends State<ViewPage> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        print("Proceed deletion");
+                      onPressed: () async {
+                        bool response = await deleteNote();
+
+                        if (!context.mounted) return;
+
+                        context.pop();
+                        context.pop();
+
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              response
+                                  ? "Note deleted successfully"
+                                  : "Note couldn't be deleted",
+                            ),
+                          ),
+                        );
                       },
                       child: Text("Yes, Delete"),
                     ),
@@ -60,13 +89,32 @@ class _ViewPageState extends State<ViewPage> {
   }
 
   // mark as completed
-  void markAsCompleted() {
-    print("Marked as completed");
+  Future<bool> markAsCompleted() async {
+    final noteRepository = NoteRepositoryImpl();
+    final markNoteAaCompletedUseCase = MarkNoteAsCompletedUseCase(
+      id: widget.note.id!,
+      noteRepository: noteRepository,
+    );
+    return markNoteAaCompletedUseCase.call();
   }
 
   // mark as pending
-  void markAsPending() {
-    print("Marked as pending");
+  Future<bool> markAsPending() async {
+    final noteRepository = NoteRepositoryImpl();
+    final markNoteAsPendingUseCase = MarkNoteAsPendingUseCase(
+      id: widget.note.id!,
+      noteRepository: noteRepository,
+    );
+    return markNoteAsPendingUseCase.call();
+  }
+
+  late String buttonLabel = "-";
+
+  @override
+  void initState() {
+    super.initState();
+    buttonLabel =
+        widget.note.completed ? "Mark as Pending" : "Mark as Completed";
   }
 
   @override
@@ -106,10 +154,7 @@ class _ViewPageState extends State<ViewPage> {
           Padding(
             padding: EdgeInsets.only(right: 16.0),
             child: InkWell(
-              onTap: () {
-                print("Delete note");
-                deleteNote();
-              },
+              onTap: () => showNoteDeletionDialog(),
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
               child: Icon(Icons.delete_outline),
@@ -132,7 +177,7 @@ class _ViewPageState extends State<ViewPage> {
                     spacing: 12.0,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      widget.note.title != null
+                      widget.note.title != null && widget.note.title!.isNotEmpty
                           ? Row(
                             children: [
                               Expanded(
@@ -173,18 +218,23 @@ class _ViewPageState extends State<ViewPage> {
                 color: Colors.transparent,
                 width: MediaQuery.of(context).size.width,
                 child: ElevatedButton(
-                  onPressed: () {
-                    print(
-                      widget.note.completed
-                          ? "Marked as pending"
-                          : "Marked as completed",
-                    );
+                  onPressed: () async {
+                    bool response =
+                        widget.note.completed
+                            ? await markAsPending()
+                            : await markAsCompleted();
+
+                    if (response) {
+                      setState(() {
+                        if (buttonLabel == "Mark as Completed") {
+                          buttonLabel = "Mark as Pending";
+                        } else {
+                          buttonLabel = "Mark as Completed";
+                        }
+                      });
+                    }
                   },
-                  child: Text(
-                    widget.note.completed
-                        ? "Mark as Pending"
-                        : "Mark As Completed",
-                  ),
+                  child: Text(buttonLabel),
                 ),
               ),
             ),

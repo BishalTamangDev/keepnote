@@ -89,7 +89,10 @@ class _HomePageState extends State<HomePage> {
                           spacing: 16.0,
                           children: [
                             ...data.map((note) {
-                              return NoteWidget(note: note);
+                              return NoteWidget(
+                                note: note,
+                                callback: _refreshPage,
+                              );
                             }),
                           ],
                         ),
