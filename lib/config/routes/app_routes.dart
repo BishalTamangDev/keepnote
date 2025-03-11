@@ -1,5 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:keepnote/data/models/note_model.dart';
+import 'package:keepnote/domain/entities/note_entity.dart';
 import 'package:keepnote/presentation/pages/add_page.dart';
 import 'package:keepnote/presentation/pages/error_page.dart';
 import 'package:keepnote/presentation/pages/home_page.dart';
@@ -17,7 +17,7 @@ class AppRouter {
           GoRoute(
             path: '/view',
             builder: (context, state) {
-              final note = state.extra as NoteModel;
+              final note = state.extra as NoteEntity;
               return ViewPage(note: note);
             },
           ),
@@ -28,7 +28,7 @@ class AppRouter {
           GoRoute(
             path: '/update',
             builder: (context, state) {
-              final note = state.extra as NoteModel;
+              final note = state.extra as NoteEntity;
               return AddPage(task: 'update', note: note);
             },
           ),

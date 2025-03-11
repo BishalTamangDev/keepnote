@@ -13,17 +13,18 @@ class LoadingPage extends StatefulWidget {
 class _LoadingPageState extends State<LoadingPage> {
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.max,
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Column(
-          children: [
-            Lottie.asset('assets/animations/loading.json', width: 90.0),
-            CustomTextWidget(text: "Fetching Your Notes", opacity: 0.7),
-          ],
-        ),
-      ],
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Column(
+            children: [
+              Lottie.asset('assets/animations/loading.json', width: 75.0),
+              CustomTextWidget(text: "Fetching Your Notes", opacity: 0.7),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

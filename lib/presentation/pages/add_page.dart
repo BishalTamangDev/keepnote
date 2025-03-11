@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:keepnote/core/utils/title_case_helper.dart';
+import 'package:keepnote/domain/entities/note_entity.dart';
 import 'package:keepnote/shared/custom_widgets/custom_text_widget.dart';
-
-import '../../data/models/note_model.dart';
 
 class AddPage extends StatefulWidget {
   const AddPage({super.key, this.task = 'add', this.note});
 
   final String task;
 
-  final NoteModel? note;
+  final NoteEntity? note;
 
   @override
   State<AddPage> createState() => _AddPageState();
@@ -25,30 +24,50 @@ class _AddPageState extends State<AddPage> {
 
   // functions
   void resetValues() {
-    if (widget.task == 'add') {
+    setState(() {
+      titleController.clear();
+      descriptionController.clear();
+      priority = 'normal';
+    });
+  }
+
+  // fetch initial values
+  void setInitialValues() {
+    if (widget.note != null) {
       setState(() {
-        titleController.clear();
-        descriptionController.clear();
-        priority = 'normal';
+        titleController.text = widget.note!.title ?? "";
+        descriptionController.text = widget.note!.description ?? "";
+        switch (widget.note!.priority) {
+          case NotePriorityEnum.low:
+            priority = "low";
+            break;
+          case NotePriorityEnum.normal:
+            priority = "normal";
+            break;
+          case NotePriorityEnum.high:
+            priority = "high";
+            break;
+        }
       });
-    } else {
-      if (widget.note != null) {
-        setState(() {
-          titleController.text = widget.note!.title ?? "";
-          descriptionController.text = widget.note!.description ?? "";
-          priority = widget.note!.priority ?? "normal";
-        });
-      }
     }
   }
 
-  // update
+  // add note
+  void addNote() {
+    print("Add note");
+  }
+
+  // update note
   void updateNote() {
     print("Update note");
   }
 
-  void addNote() {
-    print("Add note");
+  @override
+  void initState() {
+    if (widget.task == 'update') {
+      setInitialValues();
+    }
+    super.initState();
   }
 
   @override
@@ -69,7 +88,9 @@ class _AddPageState extends State<AddPage> {
           Padding(
             padding: const EdgeInsets.only(right: 16.0),
             child: IconButton(
-              onPressed: () => resetValues(),
+              onPressed:
+                  () =>
+                      widget.task == 'add' ? resetValues() : setInitialValues(),
               icon: Icon(Icons.undo),
             ),
           ),

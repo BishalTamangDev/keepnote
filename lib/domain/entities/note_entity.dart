@@ -1,17 +1,19 @@
+enum NotePriorityEnum { low, normal, high }
+
 class NoteEntity {
-  int? id;
-  String? title;
-  String description;
-  String priority;
-  DateTime? dateTime;
-  bool completed;
+  final int? id;
+  final String? title;
+  final String description;
+  final NotePriorityEnum priority;
+  final DateTime dateTime;
+  final bool completed;
 
   NoteEntity({
     this.id,
     this.title,
     required this.description,
-    this.priority = 'normal',
+    this.priority = NotePriorityEnum.normal,
     this.completed = false,
-    DateTime? newDateTime,
-  }) : dateTime = newDateTime ?? DateTime.now();
+    required this.dateTime,
+  });
 }
