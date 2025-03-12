@@ -37,7 +37,8 @@ class _NoteWidgetState extends State<NoteWidget> {
       splashColor: Colors.transparent,
       highlightColor: Colors.transparent,
       borderRadius: BorderRadius.circular(8.0),
-      onTap: () => context
+      onTap:
+          () => context
               .push("/note/view", extra: widget.note)
               .then((_) => widget.callback()),
       child: Opacity(

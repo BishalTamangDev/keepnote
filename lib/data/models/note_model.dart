@@ -22,8 +22,8 @@ class NoteModel extends NoteEntity {
       ),
       completed: json['completed'] == 1 ? true : false,
       dateTime:
-          json['dateTime'] != null
-              ? DateTime.parse(json['dateTime'])
+          json['date_time'] != null
+              ? DateTime.parse(json['date_time'])
               : DateTime.now(),
     );
   }

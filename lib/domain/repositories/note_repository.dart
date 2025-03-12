@@ -11,6 +11,9 @@ abstract class NoteRepository {
   // add new note
   Future<bool> addNewNote(NoteEntity noteEntity);
 
+  // update note
+  Future<bool> updateNote(NoteEntity noteEntity);
+
   // delete note
   Future<bool> deleteNote(int id);
 

@@ -48,7 +48,6 @@ class NoteLocalDataSource {
           );
         },
       );
-      print("Database created successfully!");
       _database = db;
       return Right(db);
     } catch (e) {
@@ -79,8 +78,6 @@ class NoteLocalDataSource {
         (failure) async => Left(LocalDatabaseFailure(failure.toString())),
         (db) async {
           final unMutableNotes = await db.query(tblName);
-
-          print("Data :: $unMutableNotes");
 
           final List<NoteModel> notes =
               unMutableNotes.map((datum) => NoteModel.fromJson(datum)).toList();
@@ -122,10 +119,51 @@ class NoteLocalDataSource {
           'date_time': note.dateTime.toString(),
         };
 
-        print(data);
-
         int rowAffected = await db.insert(tblName, data);
         return rowAffected > 0;
+      });
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // update note
+  Future<bool> updateNote(NoteEntity noteEntity) async {
+    try {
+      final response = await getDb();
+
+      return await response.fold((failure) => false, (db) async {
+        try {
+          String priorityString = "normal";
+          switch (noteEntity.priority) {
+            case NotePriorityEnum.low:
+              priorityString = "low";
+              break;
+            case NotePriorityEnum.high:
+              priorityString = "high";
+              break;
+            case NotePriorityEnum.normal:
+              priorityString = "normal";
+          }
+
+          final Map<String, dynamic> data = {
+            'title': noteEntity.title ?? "",
+            'description': noteEntity.description ?? "",
+            'priority': priorityString,
+            'completed': noteEntity.completed ? 1 : 0,
+            'date_time': noteEntity.dateTime.toString(),
+          };
+
+          int rowsAffected = await db.update(
+            tblName,
+            data,
+            where: "id = ?",
+            whereArgs: [noteEntity.id],
+          );
+          return rowsAffected > 0;
+        } catch (e) {
+          return false;
+        }
       });
     } catch (e) {
       return false;

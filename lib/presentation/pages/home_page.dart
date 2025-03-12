@@ -19,6 +19,7 @@ class _HomePageState extends State<HomePage> {
   // variables
   late Future<Either<LocalDatabaseFailure, List<NoteModel>>> _allNotes;
 
+  // get all notes
   Future<Either<LocalDatabaseFailure, List<NoteModel>>> getAllNotes() async {
     final noteRepository = NoteRepositoryImpl();
     final getAllNotesUseCase = GetAllNotesUseCase(repository: noteRepository);

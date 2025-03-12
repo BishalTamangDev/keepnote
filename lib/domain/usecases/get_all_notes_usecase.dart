@@ -12,8 +12,7 @@ class GetAllNotesUseCase {
     try {
       final result = await repository.getAllNotes();
       return result.fold(
-        (failure) =>
-            Left(LocalDatabaseFailure(failure.message.toString())),
+        (failure) => Left(LocalDatabaseFailure(failure.message.toString())),
         (data) => Right(data),
       );
     } catch (e) {

@@ -4,6 +4,7 @@ import 'package:keepnote/core/utils/title_case_helper.dart';
 import 'package:keepnote/data/repositories/note_repository_impl.dart';
 import 'package:keepnote/domain/entities/note_entity.dart';
 import 'package:keepnote/domain/usecases/add_new_note_usecase.dart';
+import 'package:keepnote/domain/usecases/update_note_usecase.dart';
 import 'package:keepnote/shared/custom_widgets/custom_text_widget.dart';
 
 class AddPage extends StatefulWidget {
@@ -23,6 +24,7 @@ class _AddPageState extends State<AddPage> {
   final descriptionController = TextEditingController();
   DateTime? dateTime;
   String priority = "normal";
+  late bool completed;
 
   // functions
   void resetValues() {
@@ -37,6 +39,7 @@ class _AddPageState extends State<AddPage> {
   void setInitialValues() {
     if (widget.note != null) {
       setState(() {
+        completed = widget.note!.completed;
         titleController.text = widget.note!.title ?? "";
         descriptionController.text = widget.note!.description ?? "";
         switch (widget.note!.priority) {
@@ -91,8 +94,37 @@ class _AddPageState extends State<AddPage> {
   }
 
   // update note
-  void updateNote() {
-    print("Update note");
+  Future<bool> updateNote() async {
+    final noteRepository = NoteRepositoryImpl();
+
+    var priorityEnum = NotePriorityEnum.normal;
+
+    switch (priority) {
+      case 'low':
+        priorityEnum = NotePriorityEnum.low;
+        break;
+      case 'high':
+        priorityEnum = NotePriorityEnum.high;
+        break;
+      default:
+        priorityEnum = NotePriorityEnum.normal;
+    }
+
+    final noteEntity = NoteEntity(
+      id: widget.note!.id,
+      title: titleController.text.toString(),
+      description: descriptionController.text.toString(),
+      completed: widget.note!.completed,
+      dateTime: DateTime.now(),
+      priority: priorityEnum,
+    );
+
+    final updateNoteUseCase = UpdateNoteUseCase(
+      noteEntity: noteEntity,
+      noteRepository: noteRepository,
+    );
+
+    return await updateNoteUseCase.call();
   }
 
   // show snack bar
@@ -113,9 +145,7 @@ class _AddPageState extends State<AddPage> {
 
   @override
   void initState() {
-    if (widget.task == 'update') {
-      setInitialValues();
-    }
+    if (widget.task == 'update') setInitialValues();
     super.initState();
   }
 
@@ -264,12 +294,17 @@ class _AddPageState extends State<AddPage> {
                       );
 
                       if (response) resetValues();
-
-                      response
-                          ? print("Note added successfully")
-                          : print("Note not added");
                     } else {
-                      updateNote();
+                      bool response = await updateNote();
+
+                      if (!context.mounted) return;
+
+                      showSnackBar(
+                        context,
+                        response
+                            ? "Note updated successfully."
+                            : "Note couldn't be updated.",
+                      );
                     }
                   },
                   child: Text(TitleCaseHelper.getString(widget.task)),

@@ -38,4 +38,9 @@ class NoteRepositoryImpl extends NoteRepository {
   Future<bool> markNoteAsPending(int id) async {
     return await NoteLocalDataSource.getInstance().markNoteAsPending(id);
   }
+
+  @override
+  Future<bool> updateNote(NoteEntity noteEntity) async {
+    return await NoteLocalDataSource.getInstance().updateNote(noteEntity);
+  }
 }
