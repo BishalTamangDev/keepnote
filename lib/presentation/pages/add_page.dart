@@ -5,6 +5,7 @@ import 'package:keepnote/data/repositories/note_repository_impl.dart';
 import 'package:keepnote/domain/entities/note_entity.dart';
 import 'package:keepnote/domain/usecases/add_new_note_usecase.dart';
 import 'package:keepnote/domain/usecases/update_note_usecase.dart';
+import 'package:keepnote/shared/custom_widgets/custom_snackbar_widget.dart';
 import 'package:keepnote/shared/custom_widgets/custom_text_widget.dart';
 
 import '../../core/constants/app_constants.dart';
@@ -90,22 +91,6 @@ class _AddPageState extends State<AddPage> {
     );
 
     return await updateNoteUseCase.call();
-  }
-
-  // show snack bar
-  void showSnackBar(BuildContext context, String message) {
-    final scaffoldContext = ScaffoldMessenger.of(context);
-    if (scaffoldContext.mounted) {
-      scaffoldContext.hideCurrentSnackBar();
-    }
-    scaffoldContext.showSnackBar(
-      SnackBar(
-        behavior: SnackBarBehavior.floating,
-        margin: EdgeInsets.only(bottom: 77.0, left: 16.0, right: 16.0),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8.0)),
-        content: Text(message),
-      ),
-    );
   }
 
   @override
@@ -230,7 +215,11 @@ class _AddPageState extends State<AddPage> {
                   onPressed: () async {
                     // check values
                     if (descriptionController.text.isEmpty) {
-                      showSnackBar(context, "Description must be provided.");
+                      CustomSnackBarWidget.show(
+                        context: context,
+                        message: "Description must be provided.",
+                        floatHigher: true,
+                      );
                       return;
                     }
 
@@ -239,11 +228,13 @@ class _AddPageState extends State<AddPage> {
 
                       if (!context.mounted) return;
 
-                      showSnackBar(
-                        context,
-                        response
-                            ? "Note added successfully"
-                            : "Not couldn't be added",
+                      CustomSnackBarWidget.show(
+                        context: context,
+                        message:
+                            response
+                                ? "Note added successfully"
+                                : "Not couldn't be added",
+                        floatHigher: true,
                       );
 
                       if (response) resetValues();
@@ -252,11 +243,14 @@ class _AddPageState extends State<AddPage> {
 
                       if (!context.mounted) return;
 
-                      showSnackBar(
-                        context,
-                        response
-                            ? "Note updated successfully."
-                            : "Note couldn't be updated.",
+                      // show snack bar
+                      CustomSnackBarWidget.show(
+                        context: context,
+                        message:
+                            response
+                                ? "Note updated successfully."
+                                : "Note couldn't be updated.",
+                        floatHigher: true,
                       );
                     }
                   },

@@ -7,6 +7,7 @@ import 'package:keepnote/domain/usecases/delete_note_usecase.dart';
 import 'package:keepnote/domain/usecases/mark_note_as_completed_usecase.dart';
 import 'package:keepnote/domain/usecases/mark_note_as_pending_usecase.dart';
 import 'package:keepnote/presentation/widgets/priority_badge_widget.dart';
+import 'package:keepnote/shared/custom_widgets/custom_snackbar_widget.dart';
 
 import '../../shared/custom_widgets/custom_text_widget.dart';
 
@@ -60,14 +61,13 @@ class _ViewPageState extends State<ViewPage> {
                         context.pop();
                         context.pop();
 
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(
+                        CustomSnackBarWidget.show(
+                          context: context,
+                          message:
                               response
                                   ? "Note deleted successfully"
                                   : "Note couldn't be deleted",
-                            ),
-                          ),
+                          floatHigher: false,
                         );
                       },
                       child: Text("Yes, Delete"),
