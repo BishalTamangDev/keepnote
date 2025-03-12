@@ -29,7 +29,7 @@ class NoteLocalDataSource {
   final String tblName = "note_tbl";
 
   // create database
-  Future<Either<AppFailure, Database>> openDb() async {
+  Future<Either<LocalDatabaseFailure, Database>> openDb() async {
     try {
       if (_database != null) return Right(_database!);
 
@@ -58,7 +58,7 @@ class NoteLocalDataSource {
   }
 
   // get database
-  Future<Either<AppFailure, Database>> getDb() async {
+  Future<Either<LocalDatabaseFailure, Database>> getDb() async {
     try {
       final result = await openDb();
 
@@ -89,6 +89,50 @@ class NoteLocalDataSource {
       );
     } catch (e) {
       return Left(LocalDatabaseFailure(e.toString()));
+    }
+  }
+
+  // fetch note
+  Future<Either<LocalDatabaseFailure, NoteEntity>> fetchNote(int id) async {
+    try {
+      final response = await getDb();
+
+      return await response.fold((failure) => Left(failure), (db) async {
+        try {
+          final unMutableNotes = await db.query(
+            tblName,
+            where: "id = ?",
+            whereArgs: [id],
+            limit: 1,
+          );
+
+          if (unMutableNotes.isEmpty) {
+            return Left(LocalDatabaseFailure("Not not found!"));
+          }
+
+          final mutableNotes =
+              unMutableNotes.map((datum) => {...datum}).toList();
+
+          final noteEntity = NoteEntity(
+            id: int.parse(mutableNotes[0]['id'].toString()),
+            title: mutableNotes[0]['title'].toString(),
+            description: mutableNotes[0]['description'].toString(),
+            completed: mutableNotes[0]['completed'] == 1,
+            priority: NotePriorityEnum.getOption(
+              mutableNotes[0]['priority'].toString(),
+            ),
+            dateTime:
+                DateTime.tryParse(mutableNotes[0]['date_time'].toString()) ??
+                DateTime.now(),
+          );
+
+          return Right(noteEntity);
+        } catch (e) {
+          return Left(LocalDatabaseFailure(e.toString()));
+        }
+      });
+    } catch (e) {
+      return Left(LocalDatabaseFailure("Note not found!"));
     }
   }
 

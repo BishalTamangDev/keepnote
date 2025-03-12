@@ -15,10 +15,10 @@ class AppRouter {
         builder: (context, state) => ErrorPage(),
         routes: [
           GoRoute(
-            path: '/view',
+            path: '/view/:id',
             builder: (context, state) {
-              final note = state.extra as NoteEntity;
-              return ViewPage(note: note);
+              final int id = int.parse(state.pathParameters['id'].toString());
+              return ViewPage(id: id);
             },
           ),
           GoRoute(

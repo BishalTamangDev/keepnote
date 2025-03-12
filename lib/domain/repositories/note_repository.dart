@@ -8,6 +8,9 @@ abstract class NoteRepository {
   // get all notes
   Future<Either<AppFailure, List<NoteModel>>> getAllNotes();
 
+  // fetch note
+  Future<Either<LocalDatabaseFailure, NoteEntity>> fetchNote(int id);
+
   // add new note
   Future<bool> addNewNote(NoteEntity noteEntity);
 

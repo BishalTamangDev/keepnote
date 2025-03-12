@@ -16,4 +16,10 @@ class NoteEntity {
     this.completed = false,
     required this.dateTime,
   });
+
+  // to string
+  @override
+  String toString() {
+    return 'NoteEntity{id: $id, title: $title, description: $description, priority: $priority, completed: $completed, date_time: $dateTime }';
+  }
 }

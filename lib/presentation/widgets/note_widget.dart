@@ -29,7 +29,7 @@ class _NoteWidgetState extends State<NoteWidget> {
       borderRadius: BorderRadius.circular(8.0),
       onTap:
           () => context
-              .push("/note/view", extra: widget.note)
+              .push("/note/view/${widget.note.id}")
               .then((_) => widget.callback()),
       child: Opacity(
         opacity: widget.note.completed ? 0.3 : 1,
