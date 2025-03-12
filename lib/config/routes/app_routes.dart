@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:keepnote/config/page_transition/page_transitions.dart';
 import 'package:keepnote/domain/entities/note_entity.dart';
 import 'package:keepnote/presentation/pages/add_page.dart';
 import 'package:keepnote/presentation/pages/error_page.dart';
@@ -9,27 +10,51 @@ class AppRouter {
   static final GoRouter appRouter = GoRouter(
     initialLocation: '/home',
     routes: [
-      GoRoute(path: '/home', builder: (context, state) => HomePage()),
+      GoRoute(
+        path: '/home',
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            child: HomePage(),
+            transitionsBuilder: PageTransitions.immediateTransition,
+          );
+        },
+      ),
       GoRoute(
         path: '/note',
-        builder: (context, state) => ErrorPage(),
+        pageBuilder: (context, state) {
+          return CustomTransitionPage(
+            child: ErrorPage(),
+            transitionsBuilder: PageTransitions.immediateTransition,
+          );
+        },
         routes: [
           GoRoute(
-            path: '/view/:id',
-            builder: (context, state) {
+            path: 'view/:id',
+            pageBuilder: (context, state) {
               final int id = int.parse(state.pathParameters['id'].toString());
-              return ViewPage(id: id);
+              return CustomTransitionPage(
+                child: ViewPage(id: id),
+                transitionsBuilder: PageTransitions.immediateTransition,
+              );
             },
           ),
           GoRoute(
-            path: '/add',
-            builder: (context, state) => AddPage(task: 'add'),
+            path: 'add',
+            pageBuilder: (context, state) {
+              return CustomTransitionPage(
+                child: AddPage(task: 'add'),
+                transitionsBuilder: PageTransitions.immediateTransition,
+              );
+            },
           ),
           GoRoute(
-            path: '/update',
-            builder: (context, state) {
+            path: 'update',
+            pageBuilder: (context, state) {
               final note = state.extra as NoteEntity;
-              return AddPage(task: 'update', note: note);
+              return CustomTransitionPage(
+                child: AddPage(task: 'update', note: note),
+                transitionsBuilder: PageTransitions.immediateTransition,
+              );
             },
           ),
         ],
