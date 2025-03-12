@@ -119,18 +119,7 @@ class _ViewPageState extends State<ViewPage> {
 
   @override
   Widget build(BuildContext context) {
-    String priority = "";
-    switch (widget.note.priority) {
-      case NotePriorityEnum.low:
-        priority = "low";
-        break;
-      case NotePriorityEnum.normal:
-        priority = "normal";
-        break;
-      case NotePriorityEnum.high:
-        priority = "high";
-        break;
-    }
+    String priority = widget.note.title!;
 
     return Scaffold(
       appBar: AppBar(
@@ -186,10 +175,10 @@ class _ViewPageState extends State<ViewPage> {
                                   type: 'title',
                                 ),
                               ),
-                              PriorityBadge(priority: priority),
+                              PriorityBadge(priority: widget.note.priority),
                             ],
                           )
-                          : PriorityBadge(priority: priority),
+                          : PriorityBadge(priority: widget.note.priority),
                       CustomTextWidget(
                         text: FormatDateTimeHelper.getString(
                           widget.note.dateTime,

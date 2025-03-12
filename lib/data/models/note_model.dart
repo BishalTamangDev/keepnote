@@ -1,3 +1,4 @@
+import '../../core/constants/app_constants.dart';
 import '../../domain/entities/note_entity.dart';
 
 class NoteModel extends NoteEntity {
@@ -16,10 +17,7 @@ class NoteModel extends NoteEntity {
       id: json['id'] as int?,
       title: json['title'] as String?,
       description: json['description'] as String,
-      priority: NotePriorityEnum.values.firstWhere(
-        (e) => e.name == json['priority'],
-        orElse: () => NotePriorityEnum.normal, // Default if value is invalid
-      ),
+      priority: NotePriorityEnum.getOption(json['priority']),
       completed: json['completed'] == 1 ? true : false,
       dateTime:
           json['date_time'] != null

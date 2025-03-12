@@ -7,6 +7,8 @@ import 'package:keepnote/domain/usecases/add_new_note_usecase.dart';
 import 'package:keepnote/domain/usecases/update_note_usecase.dart';
 import 'package:keepnote/shared/custom_widgets/custom_text_widget.dart';
 
+import '../../core/constants/app_constants.dart';
+
 class AddPage extends StatefulWidget {
   const AddPage({super.key, this.task = 'add', this.note});
 
@@ -23,7 +25,7 @@ class _AddPageState extends State<AddPage> {
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   DateTime? dateTime;
-  String priority = "normal";
+  String priority = NotePriorityEnum.normal.title;
   late bool completed;
 
   // functions
@@ -31,7 +33,7 @@ class _AddPageState extends State<AddPage> {
     setState(() {
       titleController.clear();
       descriptionController.clear();
-      priority = 'normal';
+      priority = NotePriorityEnum.normal.title;
     });
   }
 
@@ -41,18 +43,8 @@ class _AddPageState extends State<AddPage> {
       setState(() {
         completed = widget.note!.completed;
         titleController.text = widget.note!.title ?? "";
-        descriptionController.text = widget.note!.description ?? "";
-        switch (widget.note!.priority) {
-          case NotePriorityEnum.low:
-            priority = "low";
-            break;
-          case NotePriorityEnum.normal:
-            priority = "normal";
-            break;
-          case NotePriorityEnum.high:
-            priority = "high";
-            break;
-        }
+        descriptionController.text = widget.note!.description;
+        priority = NotePriorityEnum.getTitle(widget.note!.priority);
       });
     }
   }
@@ -61,31 +53,17 @@ class _AddPageState extends State<AddPage> {
   Future<bool> addNote() async {
     final noteRepository = NoteRepositoryImpl();
 
-    var priorityEnum = NotePriorityEnum.normal;
-
-    switch (priority) {
-      case 'low':
-        priorityEnum = NotePriorityEnum.low;
-        break;
-      case 'high':
-        priorityEnum = NotePriorityEnum.high;
-        break;
-      default:
-        priorityEnum = NotePriorityEnum.normal;
-        break;
-    }
-
-    final note = NoteEntity(
+    final noteEntity = NoteEntity(
       title: titleController.text.toString(),
       description: descriptionController.text.toString(),
       completed: false,
       dateTime: DateTime.now(),
-      priority: priorityEnum,
+      priority: NotePriorityEnum.getOption(priority),
     );
 
     final addNoteUseCase = AddNewNoteUseCase(
       noteRepository: noteRepository,
-      noteEntity: note,
+      noteEntity: noteEntity,
     );
 
     final response = await addNoteUseCase.call();
@@ -97,26 +75,13 @@ class _AddPageState extends State<AddPage> {
   Future<bool> updateNote() async {
     final noteRepository = NoteRepositoryImpl();
 
-    var priorityEnum = NotePriorityEnum.normal;
-
-    switch (priority) {
-      case 'low':
-        priorityEnum = NotePriorityEnum.low;
-        break;
-      case 'high':
-        priorityEnum = NotePriorityEnum.high;
-        break;
-      default:
-        priorityEnum = NotePriorityEnum.normal;
-    }
-
     final noteEntity = NoteEntity(
       id: widget.note!.id,
       title: titleController.text.toString(),
       description: descriptionController.text.toString(),
       completed: widget.note!.completed,
       dateTime: DateTime.now(),
-      priority: priorityEnum,
+      priority: NotePriorityEnum.getOption(priority),
     );
 
     final updateNoteUseCase = UpdateNoteUseCase(
@@ -209,25 +174,13 @@ class _AddPageState extends State<AddPage> {
                           underline: SizedBox(),
                           value: priority,
                           items: [
-                            DropdownMenuItem(
-                              value: 'normal',
-                              child: CustomTextWidget(
-                                text: 'Normal',
-                                type: 'label',
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'high',
-                              child: CustomTextWidget(
-                                text: 'High',
-                                type: 'label',
-                              ),
-                            ),
-                            DropdownMenuItem(
-                              value: 'low',
-                              child: CustomTextWidget(
-                                text: 'Low',
-                                type: 'label',
+                            ...NotePriorityEnum.values.map(
+                              (option) => DropdownMenuItem(
+                                value: option.title,
+                                child: CustomTextWidget(
+                                  text: option.title,
+                                  type: 'label',
+                                ),
                               ),
                             ),
                           ],

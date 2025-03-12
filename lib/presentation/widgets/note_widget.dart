@@ -5,6 +5,8 @@ import 'package:keepnote/domain/entities/note_entity.dart';
 import 'package:keepnote/presentation/widgets/priority_badge_widget.dart';
 import 'package:keepnote/shared/custom_widgets/custom_text_widget.dart';
 
+import '../../core/constants/app_constants.dart';
+
 class NoteWidget extends StatefulWidget {
   const NoteWidget({super.key, required this.note, required this.callback});
 
@@ -19,19 +21,7 @@ class NoteWidget extends StatefulWidget {
 class _NoteWidgetState extends State<NoteWidget> {
   @override
   Widget build(BuildContext context) {
-    String priority = "";
-
-    switch (widget.note.priority) {
-      case NotePriorityEnum.normal:
-        priority = "normal";
-        break;
-      case NotePriorityEnum.low:
-        priority = "low";
-        break;
-      case NotePriorityEnum.high:
-        priority = "high";
-        break;
-    }
+    String priority = NotePriorityEnum.getTitle(widget.note.priority);
 
     return InkWell(
       splashColor: Colors.transparent,
@@ -72,7 +62,7 @@ class _NoteWidgetState extends State<NoteWidget> {
                             type: 'title',
                           ),
                         ),
-                        PriorityBadge(priority: priority),
+                        PriorityBadge(priority: widget.note.priority),
                       ],
                     )
                     : Row(
@@ -83,7 +73,7 @@ class _NoteWidgetState extends State<NoteWidget> {
                             type: 'body',
                           ),
                         ),
-                        PriorityBadge(priority: priority),
+                        PriorityBadge(priority: widget.note.priority),
                       ],
                     ),
 

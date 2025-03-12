@@ -8,6 +8,8 @@ import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 
+import '../../../../core/constants/app_constants.dart';
+
 class NoteLocalDataSource {
   // private constructor
   NoteLocalDataSource._();
@@ -97,24 +99,11 @@ class NoteLocalDataSource {
 
       NoteModel note = NoteModel.fromEntity(noteEntity);
 
-      String priorityString = "";
-
-      switch (note.priority) {
-        case NotePriorityEnum.low:
-          priorityString = "low";
-          break;
-        case NotePriorityEnum.high:
-          priorityString = "high";
-          break;
-        case NotePriorityEnum.normal:
-          priorityString = "normal";
-      }
-
       return await response.fold((failure) => false, (db) async {
         Map<String, dynamic> data = {
           'title': note.title ?? "",
           'description': note.description,
-          'priority': priorityString,
+          'priority': NotePriorityEnum.getTitle(noteEntity.priority),
           'completed': note.completed ? 1 : 0,
           'date_time': note.dateTime.toString(),
         };
@@ -134,22 +123,10 @@ class NoteLocalDataSource {
 
       return await response.fold((failure) => false, (db) async {
         try {
-          String priorityString = "normal";
-          switch (noteEntity.priority) {
-            case NotePriorityEnum.low:
-              priorityString = "low";
-              break;
-            case NotePriorityEnum.high:
-              priorityString = "high";
-              break;
-            case NotePriorityEnum.normal:
-              priorityString = "normal";
-          }
-
           final Map<String, dynamic> data = {
             'title': noteEntity.title ?? "",
             'description': noteEntity.description ?? "",
-            'priority': priorityString,
+            'priority': NotePriorityEnum.getTitle(noteEntity.priority),
             'completed': noteEntity.completed ? 1 : 0,
             'date_time': noteEntity.dateTime.toString(),
           };

@@ -1,4 +1,4 @@
-enum NotePriorityEnum { low, normal, high }
+import '../../core/constants/app_constants.dart';
 
 class NoteEntity {
   final int? id;
