@@ -5,6 +5,8 @@ import 'package:keepnote/core/error/failures/app_failure.dart';
 import 'package:keepnote/data/models/note_model.dart';
 import 'package:keepnote/data/repositories/note_repository_impl.dart';
 import 'package:keepnote/domain/usecases/get_all_notes_usecase.dart';
+import 'package:keepnote/presentation/pages/empty_page.dart';
+import 'package:keepnote/presentation/pages/error_page.dart';
 import 'package:keepnote/presentation/pages/loading_page.dart';
 import 'package:keepnote/presentation/widgets/note_widget.dart';
 
@@ -72,15 +74,15 @@ class _HomePageState extends State<HomePage> {
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.done) {
             if (snapshot.hasError) {
-              return Text("Error occurred!");
+              return ErrorPage(error: snapshot.error.toString());
             } else {
               return snapshot.data!.fold(
                 (failure) {
-                  return Center(child: Text(failure.message));
+                  return ErrorPage(error: failure.message);
                 },
                 (data) {
                   if (data.isEmpty) {
-                    return Center(child: Text("Empty!"));
+                    return EmptyPage();
                   } else {
                     return SingleChildScrollView(
                       physics: const BouncingScrollPhysics(),

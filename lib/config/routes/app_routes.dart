@@ -2,7 +2,7 @@ import 'package:go_router/go_router.dart';
 import 'package:keepnote/config/page_transition/page_transitions.dart';
 import 'package:keepnote/domain/entities/note_entity.dart';
 import 'package:keepnote/presentation/pages/add_page.dart';
-import 'package:keepnote/presentation/pages/error_page.dart';
+import 'package:keepnote/presentation/pages/page_not_found_page.dart';
 import 'package:keepnote/presentation/pages/home_page.dart';
 import 'package:keepnote/presentation/pages/view_page.dart';
 
@@ -23,7 +23,7 @@ class AppRouter {
         path: '/note',
         pageBuilder: (context, state) {
           return CustomTransitionPage(
-            child: ErrorPage(),
+            child: PageNotFoundPage(),
             transitionsBuilder: PageTransitions.immediateTransition,
           );
         },
@@ -60,6 +60,6 @@ class AppRouter {
         ],
       ),
     ],
-    errorBuilder: (context, state) => ErrorPage(),
+    errorBuilder: (context, state) => PageNotFoundPage(),
   );
 }
