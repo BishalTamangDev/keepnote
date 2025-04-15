@@ -1,10 +1,12 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:keepnote/config/page_transition/page_transitions.dart';
-import 'package:keepnote/domain/entities/note_entity.dart';
-import 'package:keepnote/presentation/pages/add_page.dart';
-import 'package:keepnote/presentation/pages/page_not_found_page.dart';
-import 'package:keepnote/presentation/pages/home_page.dart';
-import 'package:keepnote/presentation/pages/view_page.dart';
+import 'package:keepnote/features/add/presentation/pages/add_page.dart';
+import 'package:keepnote/features/independent_pages/page_not_found_page.dart';
+import 'package:keepnote/features/view/presentation/bloc/view_bloc.dart';
+import 'package:keepnote/features/view/presentation/pages/view_page.dart';
+
+import '../../features/home/presentation/pages/home_page.dart';
 
 class AppRouter {
   static final GoRouter appRouter = GoRouter(
@@ -32,8 +34,9 @@ class AppRouter {
             path: 'view/:id',
             pageBuilder: (context, state) {
               final int id = int.parse(state.pathParameters['id'].toString());
+              context.read<ViewBloc>().add(ViewFetchNoteEvent(id));
               return CustomTransitionPage(
-                child: ViewPage(id: id),
+                child: ViewPage(),
                 transitionsBuilder: PageTransitions.immediateTransition,
               );
             },
@@ -42,17 +45,17 @@ class AppRouter {
             path: 'add',
             pageBuilder: (context, state) {
               return CustomTransitionPage(
-                child: AddPage(task: 'add'),
+                child: AddPage(task: 'add', id: 0),
                 transitionsBuilder: PageTransitions.immediateTransition,
               );
             },
           ),
           GoRoute(
-            path: 'update',
+            path: 'update/:id',
             pageBuilder: (context, state) {
-              final note = state.extra as NoteEntity;
+              final int id = int.parse(state.pathParameters['id'] ?? '0');
               return CustomTransitionPage(
-                child: AddPage(task: 'update', note: note),
+                child: AddPage(task: 'update', id: id),
                 transitionsBuilder: PageTransitions.immediateTransition,
               );
             },
@@ -60,6 +63,10 @@ class AppRouter {
         ],
       ),
     ],
-    errorBuilder: (context, state) => PageNotFoundPage(),
+    errorPageBuilder:
+        (context, state) => CustomTransitionPage(
+          child: PageNotFoundPage(),
+          transitionsBuilder: PageTransitions.immediateTransition,
+        ),
   );
 }

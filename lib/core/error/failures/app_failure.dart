@@ -1,9 +1,9 @@
-abstract class AppFailure {
+abstract class Failure {
   final String message;
 
-  AppFailure({required this.message});
+  Failure(this.message);
 }
 
-class LocalDatabaseFailure extends AppFailure {
-  LocalDatabaseFailure(String message) : super(message: message);
+final class LocalDatabaseFailure extends Failure {
+  LocalDatabaseFailure(super.message);
 }
